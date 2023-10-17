@@ -1,5 +1,6 @@
 package com.igor.payment.domain.controller.impl;
 
+import com.igor.payment.domain.controller.CustomerController;
 import com.igor.payment.domain.model.CustomerModel;
 import com.igor.payment.domain.service.CustomerService;
 import com.igor.payment.dto.CustomerDto;
@@ -15,7 +16,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/v1/customer")
-public class CustomerControllerImpl {
+public class CustomerControllerImpl implements CustomerController {
 
     @Autowired
     private CustomerService customerService;
@@ -23,4 +24,5 @@ public class CustomerControllerImpl {
     public ResponseEntity<CustomerModel> createCustomer(@Valid @RequestBody CustomerDto customerDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(this.customerService.create(customerDto));
     }
+
 }

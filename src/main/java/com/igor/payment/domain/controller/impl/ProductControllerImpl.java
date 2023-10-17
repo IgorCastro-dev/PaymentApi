@@ -1,5 +1,6 @@
 package com.igor.payment.domain.controller.impl;
 
+import com.igor.payment.domain.controller.ProductController;
 import com.igor.payment.domain.model.ProductModel;
 import com.igor.payment.domain.service.ProductService;
 import com.igor.payment.dto.ProductDto;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/product")
-public class ProductControllerImpl {
+public class ProductControllerImpl implements ProductController {
     @Autowired
     private ProductService productService;
     @PostMapping()
