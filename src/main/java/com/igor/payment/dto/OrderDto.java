@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OderDto {
+public class OrderDto {
     private String id;
 
     @NotBlank(message = "customerId é obrigatório")
