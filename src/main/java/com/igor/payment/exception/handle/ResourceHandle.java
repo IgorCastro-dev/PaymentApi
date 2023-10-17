@@ -1,6 +1,8 @@
 package com.igor.payment.exception.handle;
 
 import com.igor.payment.dto.error.ErrorResponseDto;
+import com.igor.payment.exception.BusinessException;
+import com.igor.payment.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -14,6 +16,18 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class ResourceHandle {
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponseDto> businessExceptionHandler(BusinessException ex) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(ex.getMessage(), ex.getHttpStatus().value());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> notFoundExceptionHandler(NotFoundException ex) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> businessExceptionHandler(MethodArgumentNotValidException ex) {
         Map<String, String> messages = new HashMap<>();
