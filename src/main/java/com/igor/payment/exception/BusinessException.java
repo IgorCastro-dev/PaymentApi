@@ -1,11 +1,13 @@
 package com.igor.payment.exception;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.http.HttpStatus;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class BusinessException extends RuntimeException{
-    private HttpStatus httpStatus;
+    private final HttpStatus httpStatus;
     public BusinessException(String message, HttpStatus httpStatus) {
         super(message);
         this.httpStatus = httpStatus;
