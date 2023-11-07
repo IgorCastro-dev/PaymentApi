@@ -70,4 +70,23 @@ class OrderServiceImplTest {
         Assertions.assertThrows(NotFoundException.class,()->orderService.create(orderDto));
         Mockito.verify(customerRepository,Mockito.times(1)).findById(orderDto.getCustomerId());
     }
+    @Test
+    void give_create_when_discountMoreThanZero_then_returnOrder(){
+        OrderDto orderDto = new OrderDto();
+        orderDto.setCustomerId("1");
+        orderDto.setProductAcronym("MEN123");
+        orderDto.setDiscount(BigDecimal.ONE);
+        CustomerModel customerModel = new CustomerModel();
+        OrderModel orderModel = new OrderModel();
+        ProductModel productModel = new ProductModel();
+        productModel.setCurrentPrice(BigDecimal.TEN);
+        productModel.setAcronym(orderDto.getProductAcronym());
+        Mockito.when(customerRepository.findById(orderDto.getCustomerId())).thenReturn(Optional.of(customerModel));
+        Mockito.when(productRepository.findByAcronym(orderDto.getProductAcronym())).thenReturn(Optional.of(productModel));
+        Mockito.when(orderRepository.save(Mockito.any(OrderModel.class))).thenReturn(orderModel);
+        Assertions.assertEquals(orderModel,orderService.create(orderDto));
+        Mockito.verify(customerRepository,Mockito.times(1)).findById(orderDto.getCustomerId());
+        Mockito.verify(productRepository,Mockito.times(1)).findByAcronym(orderDto.getProductAcronym());
+        Mockito.verify(orderRepository,Mockito.times(1)).save(Mockito.any(OrderModel.class));
+    }
 }
