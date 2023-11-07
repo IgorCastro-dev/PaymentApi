@@ -7,6 +7,7 @@ import com.igor.payment.domain.repository.CustomerRepository;
 import com.igor.payment.domain.repository.OrderRepository;
 import com.igor.payment.domain.repository.ProductRepository;
 import com.igor.payment.dto.OrderDto;
+import com.igor.payment.exception.NotFoundException;
 import com.igor.payment.mapper.OrderMapper;
 import com.igor.payment.mapper.ProductMapper;
 import org.junit.jupiter.api.Assertions;
@@ -49,5 +50,12 @@ class OrderServiceImplTest {
         Mockito.verify(customerRepository,Mockito.times(1)).findById(orderDto.getCustomerId());
         Mockito.verify(productRepository,Mockito.times(1)).findByAcronym(orderDto.getProductAcronym());
         Mockito.verify(orderRepository,Mockito.times(1)).save(Mockito.any(OrderModel.class));
+    }
+
+    @Test
+    void give_create_when_customerIsNotPresent_then_returnNotFoundException(){
+        OrderDto orderDto = new OrderDto();
+        Mockito.when(customerRepository.findById(orderDto.getCustomerId())).thenReturn(Optional.empty());
+        Assertions.assertThrows(NotFoundException.class,()->orderService.create(orderDto));
     }
 }
