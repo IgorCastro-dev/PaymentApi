@@ -58,4 +58,16 @@ class OrderServiceImplTest {
         Mockito.when(customerRepository.findById(orderDto.getCustomerId())).thenReturn(Optional.empty());
         Assertions.assertThrows(NotFoundException.class,()->orderService.create(orderDto));
     }
+    @Test
+    void give_create_when_productIsNotPresent_then_returnNotFoundException(){
+        OrderDto orderDto = new OrderDto();
+        orderDto.setCustomerId("1");
+        orderDto.setProductAcronym("MEN123");
+        orderDto.setDiscount(BigDecimal.ZERO);
+        CustomerModel customerModel = new CustomerModel();
+        Mockito.when(customerRepository.findById(orderDto.getCustomerId())).thenReturn(Optional.of(customerModel));
+        Mockito.when(productRepository.findByAcronym(orderDto.getProductAcronym())).thenReturn(Optional.empty());
+        Assertions.assertThrows(NotFoundException.class,()->orderService.create(orderDto));
+        Mockito.verify(customerRepository,Mockito.times(1)).findById(orderDto.getCustomerId());
+    }
 }
