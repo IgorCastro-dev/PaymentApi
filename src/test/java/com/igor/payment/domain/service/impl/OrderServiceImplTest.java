@@ -7,6 +7,7 @@ import com.igor.payment.domain.repository.CustomerRepository;
 import com.igor.payment.domain.repository.OrderRepository;
 import com.igor.payment.domain.repository.ProductRepository;
 import com.igor.payment.dto.OrderDto;
+import com.igor.payment.exception.BusinessException;
 import com.igor.payment.exception.NotFoundException;
 import com.igor.payment.mapper.OrderMapper;
 import com.igor.payment.mapper.ProductMapper;
@@ -88,5 +89,22 @@ class OrderServiceImplTest {
         Mockito.verify(customerRepository,Mockito.times(1)).findById(orderDto.getCustomerId());
         Mockito.verify(productRepository,Mockito.times(1)).findByAcronym(orderDto.getProductAcronym());
         Mockito.verify(orderRepository,Mockito.times(1)).save(Mockito.any(OrderModel.class));
+    }
+
+    @Test
+    void give_create_when_discountMoreThanPrice_then_returnBusinessException(){
+        OrderDto orderDto = new OrderDto();
+        orderDto.setCustomerId("1");
+        orderDto.setProductAcronym("MEN123");
+        orderDto.setDiscount(BigDecimal.TEN);
+        CustomerModel customerModel = new CustomerModel();
+        ProductModel productModel = new ProductModel();
+        productModel.setCurrentPrice(BigDecimal.ONE);
+        productModel.setAcronym(orderDto.getProductAcronym());
+        Mockito.when(customerRepository.findById(orderDto.getCustomerId())).thenReturn(Optional.of(customerModel));
+        Mockito.when(productRepository.findByAcronym(orderDto.getProductAcronym())).thenReturn(Optional.of(productModel));
+        Assertions.assertThrows(BusinessException.class,()->orderService.create(orderDto));
+        Mockito.verify(customerRepository,Mockito.times(1)).findById(orderDto.getCustomerId());
+        Mockito.verify(productRepository,Mockito.times(1)).findByAcronym(orderDto.getProductAcronym());
     }
 }
