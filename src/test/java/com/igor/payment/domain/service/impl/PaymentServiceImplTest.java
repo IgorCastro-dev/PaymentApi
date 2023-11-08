@@ -56,6 +56,30 @@ class PaymentServiceImplTest {
         Mockito.verify(customerRepository).findById("1");
         Mockito.verify(creditCardRepository).findByNumber("123123123123");
     }
+
+    @Test
+    void give_process_whenCreditCardCustomerIdIsNotEqualAndCreditCardDocumentNumberIsEqual_thenReturnTrue() {
+        PaymentDto paymentDto = new PaymentDto();
+        paymentDto.setCustomerId("1");
+        paymentDto.setOrderId("1");
+        CreditCardDto creditCardDto = new CreditCardDto();
+        creditCardDto.setNumber("123123123123");
+        paymentDto.setCreditCard(creditCardDto);
+        OrderModel orderModel = new OrderModel();
+        CustomerModel customerModel = new CustomerModel();
+        Optional<CustomerModel> customerModelOptional = Optional.of(customerModel);
+        customerModel.setCpf("15570378900");
+        CreditCardModel creditCardModel = new CreditCardModel();
+        creditCardModel.setCustomerId("2");
+        creditCardModel.setDocumentNumber("15570378900");
+        Mockito.when(orderRepository.findById("1")).thenReturn(Optional.of(orderModel));
+        Mockito.when(customerRepository.findById("1")).thenReturn(customerModelOptional);
+        Mockito.when(creditCardRepository.findByNumber("123123123123")).thenReturn(List.of(creditCardModel));
+        Assertions.assertTrue(paymentService.process(paymentDto));
+        Mockito.verify(orderRepository).findById("1");
+        Mockito.verify(customerRepository).findById("1");
+        Mockito.verify(creditCardRepository).findByNumber("123123123123");
+    }
 }
 
 
