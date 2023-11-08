@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,7 +56,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void give_process_whenPaymentIsOk_thenReturnTrue() {
+    void give_process_when_PaymentIsOk_then_returnTrue() {
         Optional<CustomerModel> customerModelOptional = Optional.of(customerModel);
         customerModel.setCpf("15570378900");
         CreditCardModel creditCardModel = new CreditCardModel();
@@ -71,7 +72,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void give_process_whenCreditCardCustomerIdIsNotEqualAndCreditCardDocumentNumberIsEqual_thenReturnTrue() {
+    void give_process_when_CreditCardCustomerIdIsNotEqualAndCreditCardDocumentNumberIsEqual_then_returnTrue() {
         Optional<CustomerModel> customerModelOptional = Optional.of(customerModel);
         customerModel.setCpf("15570378900");
         CreditCardModel creditCardModel = new CreditCardModel();
@@ -84,10 +85,11 @@ class PaymentServiceImplTest {
         Mockito.verify(orderRepository).findById("1");
         Mockito.verify(customerRepository).findById("1");
         Mockito.verify(creditCardRepository).findByNumber("123123123123");
+        Mockito.verify(creditCardRepository).save(Mockito.any(CreditCardModel.class));
     }
 
     @Test
-    void give_process_whenCreditCardCustomerIdIsNotEqualAndCreditCardDocumentNumberIsNotEqual_thenReturnTrue() {
+    void give_process_when_creditCardCustomerIdIsNotEqualAndCreditCardDocumentNumberIsNotEqual_then_returnTrue() {
         Optional<CustomerModel> customerModelOptional = Optional.of(customerModel);
         customerModel.setCpf("15570378900");
         CreditCardModel creditCardModel = new CreditCardModel();
@@ -103,17 +105,31 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void give_process_whenOrderIsNotPresent_thenReturnNotFoundException() {
+    void give_process_when_orderIsNotPresent_then_returnNotFoundException() {
         Mockito.when(orderRepository.findById("1")).thenReturn(Optional.empty());
         Assertions.assertThrows(NotFoundException.class,()->paymentService.process(paymentDto));
     }
 
     @Test
-    void give_process_whenCustomerIsNotPresent_thenNotFoundException() {
+    void give_process_when_customerIsNotPresent_then_returnNotFoundException() {
         Mockito.when(orderRepository.findById("1")).thenReturn(Optional.of(orderModel));
         Mockito.when(customerRepository.findById("1")).thenReturn(Optional.empty());
         Assertions.assertThrows(NotFoundException.class,()->paymentService.process(paymentDto));
         Mockito.verify(orderRepository).findById("1");
+    }
+
+    @Test
+    void give_process_when_creditCardIsnotPresent_then_returnTrue() {
+        Optional<CustomerModel> customerModelOptional = Optional.of(customerModel);
+        List<CreditCardModel> creditCardModels = new ArrayList<>();
+        Mockito.when(orderRepository.findById("1")).thenReturn(Optional.of(orderModel));
+        Mockito.when(customerRepository.findById("1")).thenReturn(customerModelOptional);
+        Mockito.when(creditCardRepository.findByNumber("123123123123")).thenReturn(creditCardModels);
+        Assertions.assertTrue(paymentService.process(paymentDto));
+        Mockito.verify(orderRepository).findById("1");
+        Mockito.verify(customerRepository).findById("1");
+        Mockito.verify(creditCardRepository).findByNumber("123123123123");
+        Mockito.verify(creditCardRepository).save(Mockito.any(CreditCardModel.class));
     }
 }
 
