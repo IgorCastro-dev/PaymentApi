@@ -107,6 +107,14 @@ class PaymentServiceImplTest {
         Mockito.when(orderRepository.findById("1")).thenReturn(Optional.empty());
         Assertions.assertThrows(NotFoundException.class,()->paymentService.process(paymentDto));
     }
+
+    @Test
+    void give_process_whenCustomerIsNotPresent_thenNotFoundException() {
+        Mockito.when(orderRepository.findById("1")).thenReturn(Optional.of(orderModel));
+        Mockito.when(customerRepository.findById("1")).thenReturn(Optional.empty());
+        Assertions.assertThrows(NotFoundException.class,()->paymentService.process(paymentDto));
+        Mockito.verify(orderRepository).findById("1");
+    }
 }
 
 
